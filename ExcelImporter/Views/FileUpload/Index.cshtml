@@ -1,0 +1,283 @@
+﻿@using Newtonsoft.Json
+@{
+    ViewBag.Title = "File Upload";
+}
+@model FileUploadViewModel
+
+<head>
+    <style>
+        .import-container {
+            display: flex;
+            justify-content: space-between;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section, .preview-section {
+            width: 48%;
+        }
+
+            .form-section h2, .preview-section h2 {
+                text-align: center;
+            }
+
+            .form-section label, .preview-section label {
+                display: block;
+                margin: 10px 0 5px;
+            }
+
+            .form-section input, .form-section select, .form-section button {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .form-section button {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+
+                .form-section button.cancel {
+                    background-color: #f44336;
+                }
+
+        .preview-section {
+            border-left: 1px solid #ccc;
+            padding-left: 20px;
+        }
+
+        .import-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<div class="import-container">
+    <div class="form-section">
+        <h2>Upload Excel File</h2>
+        <form asp-action="UploadFile" asp-controller="FileUpload" enctype="multipart/form-data" method="post">
+            <div>
+                <label for="file">File: @ViewBag.FileName</label>
+                <input type="file" name="file" id="file" />
+            </div>
+            <button type="submit">Upload File</button>
+        </form>
+
+        @if (ViewBag.ColumnNames != null)
+        {
+            <h3>Map Columns</h3>
+            <form asp-action="ValidateFile" asp-controller="FileUpload" method="post">
+                <div>
+                    <label asp-for="RowNumber">Row Number:</label>
+                    <select asp-for="RowNumber" asp-items="@(new SelectList(ViewBag.RowNumbers))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupStoreNumber">Pickup store #:</label>
+                    <select asp-for="PickupStoreNumber" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupStoreName">Pickup Store Name:</label>
+                    <select asp-for="PickupStoreName" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupLat">Pickup lat:</label>
+                    <select asp-for="PickupLat" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupLong">Pickup lon:</label>
+                    <select asp-for="PickupLong" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupFormattedAddress">Pickup formatted Address:</label>
+                    <select asp-for="PickupFormattedAddress" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupContactNameFirstName">Pickup Contact Name First Name:</label>
+                    <select asp-for="PickupContactNameFirstName" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupContactNameLastName">Pickup Contact Name Last Name:</label>
+                    <select asp-for="PickupContactNameLastName" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupContactEmail">Pickup Contact Email:</label>
+                    <select asp-for="PickupContactEmail" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupContactMobileNumber">Pickup Contact Mobile Number:</label>
+                    <select asp-for="PickupContactMobileNumber" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupEnableSMSNotification">Pickup Enable SMS Notification:</label>
+                    <select asp-for="PickupEnableSMSNotification" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupTime">Pickup Time:</label>
+                    <select asp-for="PickupTime" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupTolerance">Pickup tolerance (min):</label>
+                    <select asp-for="PickupTolerance" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="PickupServiceTime">Pickup Service Time:</label>
+                    <select asp-for="PickupServiceTime" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryStoreNumber">Delivery store #:</label>
+                    <select asp-for="DeliveryStoreNumber" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryStoreName">Delivery store Name:</label>
+                    <select asp-for="DeliveryStoreName" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryLat">Delivery lat (req if adding new customer):</label>
+                    <select asp-for="DeliveryLat" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryLong">Delivery long (req if adding new customer):</label>
+                    <select asp-for="DeliveryLong" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryFormattedAddress">Delivery formatted Address:</label>
+                    <select asp-for="DeliveryFormattedAddress" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryContactFirstName">Delivery Contact First Name:</label>
+                    <select asp-for="DeliveryContactFirstName" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryContactLastName">Delivery Contact Last Name:</label>
+                    <select asp-for="DeliveryContactLastName" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryContactEmail">Delivery Contact Email:</label>
+                    <select asp-for="DeliveryContactEmail" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryContactMobileNumber">Delivery Contact Mobile Number (need 0 at the front):</label>
+                    <select asp-for="DeliveryContactMobileNumber" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryEnableSMSNotification">Delivery Enable SMS Notification (No=0/Yes=1):</label>
+                    <select asp-for="DeliveryEnableSMSNotification" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryTime">Delivery Time:</label>
+                    <select asp-for="DeliveryTime" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryTolerance">Delivery Tolerance (Min past Delivery Time):</label>
+                    <select asp-for="DeliveryTolerance" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="DeliveryServiceTime">Delivery Service Time (min):</label>
+                    <select asp-for="DeliveryServiceTime" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="OrderDetails">Order Details:</label>
+                    <select asp-for="OrderDetails" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="AssignedDriver">Assigned Driver:</label>
+                    <select asp-for="AssignedDriver" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="CustomerReference">Customer Reference:</label>
+                    <select asp-for="CustomerReference" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="Payer">Payer:</label>
+                    <select asp-for="Payer" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="Vehicle">Vehicle:</label>
+                    <select asp-for="Vehicle" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="Weight">Weight:</label>
+                    <select asp-for="Weight" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+                <div>
+                    <label asp-for="Price">Price:</label>
+                    <select asp-for="Price" asp-items="@(new SelectList(ViewBag.ColumnNames))"></select>
+                </div>
+
+                <button type="submit">Validate File</button>
+            </form>
+        }
+    </div>
+    <div class="preview-section">
+        <h2 style="padding-bottom: 1rem">Preview</h2>
+        @if (ViewBag.ExcelData != null)
+        {
+            string excelDataListJson = JsonConvert.SerializeObject(ViewBag.ExcelData);
+            @if (ViewBag.ValidationResult != null)
+            {
+                <h5 style="color: green">@ViewBag.ValidationResult</h5>
+                <p>Valid Rows: @ViewBag.ExcelData.Count/@ViewBag.TotalRows</p>
+            }
+            <h5>Sample Data</h5>
+            <ul>
+                <li>Pickup Store #: @ViewBag.ExcelData[0].PickupStoreNumber.ToString("D3")</li>
+                <li>Pickup Store Name: @ViewBag.ExcelData[0].PickupStoreName</li>
+                <li>Pickup Lat: @ViewBag.ExcelData[0].PickupLat</li>
+                <li>Pickup Lon: @ViewBag.ExcelData[0].PickupLong</li>
+                <li>Pickup Formatted Address: @ViewBag.ExcelData[0].PickupFormattedAddress</li>
+                <li>Pickup Contact Name First Name: @ViewBag.ExcelData[0].PickupContactNameFirstName</li>
+                <li>Pickup Contact Name Last Name: @ViewBag.ExcelData[0].PickupContactNameLastName</li>
+                <li>Pickup Contact Email: @ViewBag.ExcelData[0].PickupContactEmail</li>
+                <li>Pickup Contact Mobile Number: @ViewBag.ExcelData[0].PickupContactMobileNumber</li>
+                <li>Pickup Enable SMS Notification: @ViewBag.ExcelData[0].PickupEnableSMSNotification</li>
+                <li>PickupTime: @ViewBag.ExcelData[0].PickupTime</li>
+                <li>PickupTolerance: @ViewBag.ExcelData[0].PickupTolerance</li>
+                <li>PickupServiceTime: @ViewBag.ExcelData[0].PickupServiceTime</li>
+                <li>DeliveryStoreNumber: @ViewBag.ExcelData[0].DeliveryStoreNumber</li>
+                <li>DeliveryStoreName: @ViewBag.ExcelData[0].DeliveryStoreName</li>
+                <li>DeliveryLat: @ViewBag.ExcelData[0].DeliveryLat</li>
+                <li>DeliveryLong: @ViewBag.ExcelData[0].DeliveryLong</li>
+                <li>DeliveryFormattedAddress: @ViewBag.ExcelData[0].DeliveryFormattedAddress</li>
+                <li>DeliveryContactFirstName: @ViewBag.ExcelData[0].DeliveryContactFirstName</li>
+                <li>DeliveryContactLastName: @ViewBag.ExcelData[0].DeliveryContactLastName</li>
+                <li>DeliveryContactEmail: @ViewBag.ExcelData[0].DeliveryContactEmail</li>
+                <li>DeliveryContactMobileNumber: @ViewBag.ExcelData[0].DeliveryContactMobileNumber</li>
+                <li>DeliveryEnableSMSNotification: @ViewBag.ExcelData[0].DeliveryEnableSMSNotification</li>
+                <li>DeliveryTime: @ViewBag.ExcelData[0].DeliveryTime</li>
+                <li>DeliveryTolerance: @ViewBag.ExcelData[0].DeliveryTolerance</li>
+                <li>DeliveryServiceTime: @ViewBag.ExcelData[0].DeliveryServiceTime</li>
+                <li>OrderDetails: @ViewBag.ExcelData[0].OrderDetails</li>
+                <li>AssignedDriver: @ViewBag.ExcelData[0].AssignedDriver</li>
+                <li>CustomerReference: @ViewBag.ExcelData[0].CustomerReference</li>
+                <li>Payer: @ViewBag.ExcelData[0].Payer</li>
+                <li>Vehicle: @ViewBag.ExcelData[0].Vehicle</li>
+                <li>Weight: @ViewBag.ExcelData[0].Weight</li>
+                <li>Price: @ViewBag.ExcelData[0].Price</li>
+            </ul>
+            <form asp-action="ImportData" asp-controller="FileUpload" method="post" target="_blank">
+                <input type="hidden" name="ExcelData" value="@excelDataListJson" />
+                <button type="submit" class="import-button">Import</button>
+            </form>
+        }
+        else
+        {
+            <div class="error-message">
+                <h5 style="color: red">@ViewBag.ErrorMessage</h5>
+            </div>
+        }
+    </div>
+</div>
